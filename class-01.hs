@@ -219,23 +219,26 @@ sign a
           4,    если x ≥ 2.
 -}
 
-{-
-eval_f :: (Num a, Ord a) => a -> Num
+
+eval_f :: (Num a, Ord a) => a -> a
 eval_f x 
    | x <= 0 = x*(-1)
    | x >= 2 = 4
    | otherwise = x^2
--}
+
 
 -- б) Написать функцию, возвращающую текстовую характеристику ("hot", "warm", "cool", "cold")
 -- по заданному значению температуры в градусах Цельсия.
 describeTemperature :: Double -> String
-describeTemperature = undefined
+describeTemperature  t
+   | t > 25 = "hot"
+   | t > 0 = "warm"
+   | t > -10 = "cool"
+   | otherwise = "cold"
 
 {- 
    в) (*) Дан список температур в градусах Фаренгейта. Вывести для каждого значения
     соответствующую текстовую характеристику.
-
   Решение:
 > map (describeTemperature . f2c) [82, 94, 50, 65, 34]
 
@@ -252,20 +255,32 @@ sum_n n
   | otherwise = error "n should be >= 1"
 
 -- а) Вычислить сумму всех целых чисел от a до b включительно.
-sum_ab = undefined
+sum_ab a b
+  | a == b =  b
+  | a < b = a + sum_ab (a+1) b
+  | otherwise = error "a should be <= b"
 
 {-
    б) Числовая последовательность определяется следующим образом:
       a1 = 1, a2 = 2, a3 = 3, a_k = a_{k−1} + a_{k−2} − 2*a_{k−3}, k = 4, 5, ...
       Вычислить её n-й элемент.
 -}
-eval_a_n = undefined
+eval_a_n 1 = 1
+eval_a_n 2 = 2
+eval_a_n 3 = 3
+eval_a_n k = eval_a_n (k-1) + eval_a_n (k-2) - 2*eval_a_n (k-3)
 
 -- в) Вычислить, пользуясь рекурсией, n-ю степень числа a (n - целое):
-pow = undefined
+pow a 0 = 1
+pow a n
+  | n > 0 = a * pow a (n-1)
+  | otherwise = error "n should be >=0"
 
 -- г) Пользуясь ранее написанной функцией pow, вычислить сумму: 1^k + 2^k + ... + n^k.
-sum_nk = undefined
+sum_nk 0 k = 0
+sum_nk n k
+  | n>0 = pow n k + sum_nk (n-1) k
+  | otherwise = error "n should be >=0"
 
 -- д) Сумма факториалов чисел от 1 до n.
 sum_fact 1 = 1
