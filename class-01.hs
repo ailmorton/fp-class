@@ -255,6 +255,7 @@ sum_n n
   | otherwise = error "n should be >= 1"
 
 -- а) Вычислить сумму всех целых чисел от a до b включительно.
+sum_ab :: (Num a, Ord a) => a -> a -> a
 sum_ab a b
   | a == b =  b
   | a < b = a + sum_ab (a+1) b
@@ -265,34 +266,51 @@ sum_ab a b
       a1 = 1, a2 = 2, a3 = 3, a_k = a_{k−1} + a_{k−2} − 2*a_{k−3}, k = 4, 5, ...
       Вычислить её n-й элемент.
 -}
+eval_a_n :: (Num a, Eq a) => a -> a
 eval_a_n 1 = 1
 eval_a_n 2 = 2
 eval_a_n 3 = 3
 eval_a_n k = eval_a_n (k-1) + eval_a_n (k-2) - 2*eval_a_n (k-3)
 
 -- в) Вычислить, пользуясь рекурсией, n-ю степень числа a (n - целое):
+pow :: (Num a, Ord a) => a -> a -> a
 pow a 0 = 1
 pow a n
   | n > 0 = a * pow a (n-1)
   | otherwise = error "n should be >=0"
 
 -- г) Пользуясь ранее написанной функцией pow, вычислить сумму: 1^k + 2^k + ... + n^k.
+sum_nk :: (Num a, Ord a) => a -> a -> a 
 sum_nk 0 k = 0
 sum_nk n k
   | n>0 = pow n k + sum_nk (n-1) k
   | otherwise = error "n should be >=0"
 
 -- д) Сумма факториалов чисел от 1 до n.
+sum_fact :: (Num a, Ord a) => a-> a
 sum_fact 1 = 1
-sum_fact n = undefined
+sum_fact n = fact n + sum_fact (n-1)
   where
-    fact n = undefined
+    fact 1 = 1
+    fact n
+      | n > 1 = n * fact (n-1)
+      | otherwise = error "n should be >= 1"
 
 -- е) Количество цифр целого числа
-number_digits = undefined
+number_digits :: (Fractional a, Ord a, Num b) => a-> b
+number_digits a 
+  | abs a < 10 = 1
+  | otherwise = 1 + number_digits (a / 10)
 
 -- ж) Проверить, является ли заданное число простым.
-isPrime = undefined
+isPrime :: (Integral a, Num a) => a -> Bool
+isPrime 1 = True
+isPrime n = nDiv (n-1) n
+	where
+	nDiv 1 n = True
+	nDiv a n
+		| mod n a == 0 = False
+		| otherwise = nDiv (a-1) n
 
 -- 8) Разное
 
@@ -303,7 +321,11 @@ isPrime = undefined
   не делятся на 400 (например, годы 300, 1300 и 1900 не являются високосными,
   а 1200 и 2000 — являются).
 -}
-
-nDays year = undefined
+nDays :: (Integral a, Num b) => a -> b
+nDays year 
+  | isLeap year = 366
+  | otherwise = 365 
   where
-    isLeap = undefined
+    isLeap y 
+      | (mod y 4 == 0) && ((mod y 100 /= 0) || (mod y 400 == 0)) = True
+      | otherwise = False
