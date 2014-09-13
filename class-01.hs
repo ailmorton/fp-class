@@ -109,21 +109,22 @@ True
 
   Определите и сохраните в этом файле типы следующих выражений:
    5
-Num
+5 :: Num a => a
    5.0
-Fractional
+5.0 :: Fractional a => a
    sqrt 4
-Floating
+sqrt 4 :: Floating a => a
    sqrt 4.0
-Floating
+sqrt 4.0 :: Floating a => a
    2+3
-Num
+2+3 :: Num a => a
    5 < 7
-Bool
+5 < 7 :: Bool
    if 2 > 3 then 7 else 5
-Num
+if 2 > 3 then 7 else 5 :: Num a => a
    5 > 6 && False
-Bool
+5 > 6 && False :: Bool
+
    Команда ":set +t" включает режим, при котором печатается тип каждого вычисляемого выражения.
    Команда ":set +s" включает режим, при котором печатается время вычисления каждого выражения.
 
