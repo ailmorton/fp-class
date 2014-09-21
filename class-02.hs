@@ -203,6 +203,7 @@ set_numeration l = set_num 1 l
   where
     set_num _ [] = []
     set_num n (x:xs) = (n,x) : set_num (n+1) xs
+
 -- з) Eq a => [a] -> [a]
 -- Удаляет первый элемент и все следующие за ним, совпадающие с первым.
 remove_first_same :: Eq a => [a] -> [a]
