@@ -19,19 +19,32 @@
 f11a :: Integral a => [a] -> [a]
 f11a = map (*2) 
 
+f11b :: [Integer] -> [Integer]
 f11b = map f
   where
   f x 
-    | mod x 2 /= 0 = x
-    | otherwise = x*2
+    | even x = x*2
+    | otherwise = x
 
+f11c :: [Integer] -> [Integer]
 f11c = map f
   where
   f x 
     | mod x 2 /= 0 = 0
     | otherwise = x
 
---f11d k = filter (>k)
+f11d :: Ord a => a -> [a] -> [a]
+f11d k = filter (<=k)
+
+f11e :: [Integer] -> [Integer]
+f11e = filter (<0)
+
+f11f :: [Integer] -> [Integer]
+f11f = filter f
+  where
+  f x
+    | x>0 && even x = False
+    | otherwise = True
 {-
  1.2 Дан список декартовых координат точек на плоскости (пар вещественных чисел).
      Преобразовать его следующим образом:
