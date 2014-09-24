@@ -19,6 +19,19 @@
 f11a :: Integral a => [a] -> [a]
 f11a = map (*2) 
 
+f11b = map f
+  where
+  f x 
+    | mod x 2 /= 0 = x
+    | otherwise = x*2
+
+f11c = map f
+  where
+  f x 
+    | mod x 2 /= 0 = 0
+    | otherwise = x
+
+--f11d k = filter (>k)
 {-
  1.2 Дан список декартовых координат точек на плоскости (пар вещественных чисел).
      Преобразовать его следующим образом:
