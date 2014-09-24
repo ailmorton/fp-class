@@ -81,7 +81,12 @@ f13a = map undefined
 -}
 
 nats :: [Integer]
-nats = iterate undefined 0
+nats = iterate (+1) 0
+
+evens :: [Integer]
+evens = iterate (+2) 2
+
+
 
 {-
 3. Группировка списков.
