@@ -59,6 +59,8 @@ f12a k
   | k==4 = filter (\x ->fst x>0 && snd x<0)
   | otherwise = error "неверная координатная четверть"
 
+f12b = map (\x ->(r x, acos $ fst x / r x))
+  where r x = sqrt $ fst x * fst x + snd x * snd x
 {-
  1.3 Дан список слов.
   a) Преобразовать все слова к верхнему регистру.
