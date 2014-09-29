@@ -24,8 +24,24 @@
      функции должно быть значение, возвращаемое по умолчанию).
 -}
 
+f1a :: [Integer] -> Integer
 f1a = foldl (\z x -> if even x then z+x else z) 0
 
+f1b :: [Double] -> (Double, Double)
+f1b = foldl (\(s,p) x -> (s+x,p*x)) (0.0,1.0)
+
+f1c :: [Double] -> Double
+f1c l = (fst sum_cnt) / (snd sum_cnt) 
+  where sum_cnt = foldl (\(s,c) x -> (s + x,c+1)) (0.0,0) l
+
+f1d :: Ord a => [a] -> a
+f1d [] = error "empty list"
+f1d (a:xs) = foldl (\z x -> min z x) a xs 
+
+max_int = maxBound::Int
+f1e :: [Int] -> Int -> Int
+f1e list def_elem = if (find_odd==max_int) then def_elem else find_odd
+  where find_odd = foldl (\a b -> if odd b then min a b else a) max_int list
 {-
  2. Свёртки, формирующие списки
   a) Сформировать список, содержащий каждый второй элемент исходного.
