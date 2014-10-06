@@ -27,21 +27,42 @@
 f1a :: [Integer] -> Integer
 f1a = foldl (\z x -> if even x then z+x else z) 0
 
+f1a_test1 = f1a [1,2,3,4,5] == 6
+f1a_test2 = f1a [-3,-4,5,6,0] == 2
+f1a_test3 = f1a [1, 3, 7] == 0
+
 f1b :: [Double] -> (Double, Double)
 f1b = foldl (\(s,p) x -> (s+x,p*x)) (0.0,1.0)
+
+f1b_test1 = f1b [1,2,3,4,5] == (15.0,120.0)
+f1b_test2 = f1b [-1,1,2,3,4,5] == (14.0,-120.0)
+f1b_test3 = f1b [1, 3, 7] == (11.0,21.0)
 
 f1c :: [Double] -> Double
 f1c l = (fst sum_cnt) / (snd sum_cnt) 
   where sum_cnt = foldl (\(s,c) x -> (s + x,c+1)) (0.0,0) l
 
+f1c_test1 = f1c [1,2,3,4,5] == 3.0
+f1c_test2 = f1c [1,2,3] == 2.0
+f1c_test3 = f1c [-3,-2,-1,0,1,2,3] == 0.0
+
 f1d :: Ord a => [a] -> a
 f1d [] = error "empty list"
 f1d (a:xs) = foldl (\z x -> min z x) a xs 
+
+f1d_test1 = f1d [1,2,3,4,5] == 1
+f1d_test2 = f1d [1,2,3,-6] == -6
+f1d_test3 = f1d [-3,-2,-100,0,1,2,3] == -100
 
 max_int = maxBound::Int
 f1e :: [Int] -> Int -> Int
 f1e list def_elem = if (find_odd==max_int) then def_elem else find_odd
   where find_odd = foldl (\a b -> if odd b then min a b else a) max_int list
+
+f1e_test1 = f1e [1,2,3,4,5,-2] 0 == 1
+f1e_test2 = f1e [1,2,3,-7] 0 == -7
+f1e_test3 = f1e [2,4,8,10] 0 == 0
+
 {-
  2. Свёртки, формирующие списки
   a) Сформировать список, содержащий каждый второй элемент исходного.
@@ -60,6 +81,100 @@ f1e list def_elem = if (find_odd==max_int) then def_elem else find_odd
      заданной функции двух аргументов к соответствующим элементам исходных списков.
 -}
 
+f2a :: [a] -> [a]
+f2a l = fst $ foldl (\(xs,a) b -> if even a then (xs++[b],a+1) else (xs,a+1)) ([],1) l
+
+f2a_test1 = f2a [1,2,3,4,5,-2] == [2,4,-2]
+f2a_test2 = f2a [1,2,3,-7,5] == [2,-7]
+f2a_test3 = f2a [1] == []
+
+f2b :: (Num a, Ord a) => [a1] -> a -> [a1]
+f2b l n = fst $ foldl (\(xs,a) b -> if a<=n then (xs++[b],a+1) else (xs,a+1)) ([],1) l
+
+f2b_test1 = f2b [1,2,3,4,5] 3 == [1,2,3]
+f2b_test2 = f2b [1,2,3,-7,5] 1 == [1]
+f2b_test3 = f2b [2] 5 == [2]
+
+f2c :: (Num a, Ord a) => [a1] -> a -> [a1]
+f2c l n = fst $ foldr (\ b (xs,a)-> if a<=n then (b:xs,a+1) else (xs,a+1)) ([],1) l
+
+f2c_test1 = f2c [1,2,3,4,5] 3 == [3,4,5]
+f2c_test2 = f2c [1,2,3,-7,5] 1 == [5]
+f2c_test3 = f2c [2] 5 == [2]
+
+f2d :: [Int] -> [Int]
+f2d l = fst $ foldl (\(xs,prev) b -> if b>prev then (xs++[b],b) else (xs,b)) ([],max_int) l
+
+f2d_test1 = f2d [1,2,-3,4,5] == [2,4,5]
+f2d_test2 = f2d [1,-2,3,-7,5] == [3,5]
+f2d_test3 = f2d [2] == []
+
+min_int = minBound::Int
+f2e :: [Int] -> [Int]
+f2e l = fst $ foldl (\(xs,(prev,prevprev)) b -> if b>prev && prev<prevprev then (xs++[prev],(b,prev)) else (xs,(b,prev))) ([],(max_int,min_int)) (l++[max_int])
+
+f2e_test1 = f2e [1,2,-3,4,5] == [1,-3]
+f2e_test2 = f2e [-10,-2,3,7,5] == [-10,5]
+f2e_test3 = f2e [2,7] == [2]
+
+f2f :: [Char] -> [[Char]]
+f2f l = f $ foldr (\a (x:xs) -> if a==' ' then []:x:xs else (a:x):xs) [[]] l
+  where
+    f = foldr (\a xs -> if a=="" then xs else a:xs) [] 
+
+f2f_test1 = f2f "  aaa   bb   ccc   " == ["aaa","bb","ccc"]
+f2f_test2 = f2f "  " == []
+f2f_test3 = f2f "aaa" == ["aaa"]
+
+f2g :: (Eq a, Integral a1) => a1 -> [a] -> [[a]]
+f2g k l =foldr (\x z -> if x/=[] then z++[x] else z) [] (fst $ foldl (\((x:xs),n) a -> if (mod n k == 1) || (k==1) then ([a]:x:xs,n+1) else ((x++[a]):xs,n+1)) ([[]],1) l)
+
+f2g_test1 = f2g 3 [1,2,3,4,5,6,7] == [[1,2,3],[4,5,6],[7]]
+f2g_test2 = f2g 7 [1,2,3] == [[1,2,3]]
+f2g_test3 = f2g 1 [1,2,3] == [[1],[2],[3]]
+
+tails l k = l1 : l2
+  where f = foldl (\(res,((z:zs),num)) x -> if (num<=k) then (res,((z:zs),num+1)) else ((z:zs):res,(zs++[x],num+1)) ) ([],(f2b l k,1)) l 
+        l1 = fst $ snd f
+        l2 = fst f
+
+eachK l k = fst $ foldr (\x (xs,n) -> if (mod n k ==1) || k==1 then (xs++[x],n+1) else (xs,n+1)) ([],1) l
+
+f2h list n k 
+  | n-k>0 =  eachK ( tails list n) (n-k)
+  | otherwise = f2g n list 
+
+f2h_test1 = f2h [1,2,3,4,5,6] 3 2 == [[1,2,3],[2,3,4],[3,4,5],[4,5,6]]
+f2h_test2 = f2h [1,2,3] 2 1 == [[1,2],[2,3]]
+f2h_test3 = f2h [1,2,3,4,5,6] 3 0 == [[1,2,3],[4,5,6]]
+
+f2k f l = snd $ foldl (\(flag,xs) x -> if flag && f x then (True,xs++[x]) else (False,xs) ) (True,[]) l
+
+f2k_test1 = f2k even [2,2,6,4,5,6] == [2,2,6,4]
+f2k_test2 = f2k even [1,2,2,6,4,5,6] == []
+f2k_test3 = f2k odd [1,2,3,4,5,6] == [1]
+
+repeatN n x = foldr (\a z -> x:z) [] [1..n] 
+
+f2l n list = foldr (\a zs -> (repeatN n a)++zs) [] list
+
+f2l_test1 = f2l 2 [1,2,3] == [1,1,2,2,3,3]
+f2l_test2 = f2l 0 [1,2,2,6,4,5,6] == []
+f2l_test3 = f2l 4 [5,6] == [5,5,5,5,6,6,6,6]
+
+
+f2m l = fst $ foldl (\(xs,prev) x -> if x/=prev then (xs++[x],x) else (xs,x)) ([],min_int) l
+
+f2m_test1 = f2m [1,1,2,2,3,3] == [1,2,3]
+f2m_test2 = f2m [1,4,4,4,6] == [1,4,6]
+f2m_test3 = f2m [5,6,7] == [5,6,7]
+
+f2n l1 l2 f = fst $ foldl (\(res, (x:xs)) y -> (res++[f x y],xs)) ([],l1) l2
+
+f2n_test1 = f2n [1,1,3] [2,5,-3] (+) == [3,6,0]
+f2n_test2 = f2n [1,1,3] [2,5,-3] (-) == [-1,-4,6]
+f2n_test3 = f2n [1,1,3] [2,5,-3] (*) == [2,5,-9]
+
 {-
  3. Использование свёртки как носителя рекурсии (для запуска свёртки можно использовать список типа [1..n]).
   a) Найти сумму чисел от a до b.
@@ -69,6 +184,18 @@ f1e list def_elem = if (find_odd==max_int) then def_elem else find_odd
      n слагаемых).
   e) Проверить, является ли заданное целое число простым.
 -}
+
+f3a a b = foldr (\x z -> z+x) 0 [a..b]
+
+f3a_test1 = f3a 1 5 == 15
+f3a_test2 = f3a (-10) 10 == 0
+f3a_test3 = f3a (-4) (-1) == -10
+
+f3c n = fst $ foldr (\x (res,(a,b)) -> (res++[(a+b)],(b,(a+b)))) ([1,1],(1,1)) [3..n]
+
+f3c_test1 = f3c 2 == [1,1]
+f3c_test2 = f3c 5 == [1,1,2,3,5]
+f3c_test3 = f3c 8 == [1,1,2,3,5,8,13,21]
 
 {-
  4. Решить задачу о поиске пути с максимальной суммой в треугольнике (см. лекцию 3) при условии,
@@ -88,3 +215,11 @@ f1e list def_elem = if (find_odd==max_int) then def_elem else find_odd
  6. Реализовать левую свёртку, пользуясь правой. Проанализировать поведение собственной реализации
   на бесконечных списках и сравнить его с поведением оригинальной foldl.
 -}
+foldl' :: (a -> b -> a) -> a -> [b] -> a
+foldl' f z l = foldr f' z (foldr (\x z -> z++[x]) [] l )
+  where
+    f' a b = f b a 
+
+f6_test1 = foldl' (\z x -> z+x) 0 [1..5] == 15
+
+
