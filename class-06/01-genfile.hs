@@ -8,9 +8,11 @@
      ghci> :main 1000 "Привет, мир" hello.txt
 -}
 import System.Environment
+import System.IO
+
 
 createFile :: Int -> String -> FilePath -> IO ()
-createFile n s fname = undefined
+createFile n s fname = writeFile fname $ foldl (\z x-> z++x) "" $ take n (iterate (\x -> s) s)
 
 main = do
   [n_str, text, fname] <- getArgs

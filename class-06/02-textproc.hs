@@ -13,4 +13,18 @@
   командной строки.
 -}
 
-main = undefined
+import System.Environment
+import System.IO
+import Data.Char
+
+
+
+processFile handle = do
+  contents <- hGetContents handle
+  putStr "Lines count = "
+  print $ length $ filter (\x -> x=='\n') contents
+
+main = do
+  [fname] <- getArgs
+  withFile fname ReadMode processFile
+
