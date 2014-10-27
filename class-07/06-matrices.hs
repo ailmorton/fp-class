@@ -65,7 +65,14 @@ matMult x y = do
 			| bx == bounds y = bx
 			| otherwise = error "matMult: incompatible bounds"
 
---1) чтение матрицы из тестового файла; пример задания матрицы в файле matrix_example.txt
+--1) чтение матрицы из тестового файла;
+{-
+Файл с матрицей должен иметь вид:
+N
+a11 a12 ... a1N
+...
+aN1 aN2 ... aNN
+-}
 readMatr :: FilePath -> IO (Array (Int, Int) Int)
 readMatr fname = do
   content <- readFile fname ;
