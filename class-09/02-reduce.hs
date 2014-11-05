@@ -1,5 +1,9 @@
 import System.Environment
 
+instance Functor (Either a) where
+	fmap f (Right x) = Right (f x)
+	fmap f (Left x) = Left x
+
 {-
   Напишите функцию reduce, принимающую один целочисленный аргумент a и возвращающую 0,
   если аргумент делится на 3, a^2, если он на 3 не делится и является при этом нечётным,
@@ -7,7 +11,10 @@ import System.Environment
 -}
 
 reduce :: Integral a => a -> a
-reduce = undefined
+reduce a 
+	| (mod a 3)==0 = 0 
+	| even a = a^2 
+	| otherwise = a^3 
 
 {-
   Напишите функцию, применяющую функцию reduce заданное количество раз к значению в контексте,
@@ -15,7 +22,7 @@ reduce = undefined
 -}
 
 reduceNF :: (Functor f, Integral a) => Int -> f a -> f a
-reduceNF = undefined
+reduceNF n x = foldr (\z -> fmap reduce z) x [1..n]
 
 {-
   Реализуйте следующие функции-преобразователи произвольным, но, желательно, осмысленным и

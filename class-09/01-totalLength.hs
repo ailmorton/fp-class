@@ -5,7 +5,7 @@ import System.Environment
 -}
 
 totalLength :: [String] -> Int
-totalLength = undefined
+totalLength list = sum $ map length list
 
 {-
   Написать функцию, которая по заданному символу и целому числу n строит список строк,
@@ -13,7 +13,9 @@ totalLength = undefined
 -}
 
 build1 :: Char -> Int -> Maybe [String]
-build1 = undefined
+build1 c n
+	| n==0 = Nothing
+	| otherwise = Just (foldr (\x list ->(take x (repeat c)):list) [] [1..n])
 
 {-
   Написать функцию, аналогичную по возможностям функции build1, но возвращающую при этом
@@ -25,7 +27,13 @@ build1 = undefined
 -}
 
 build2 :: Char -> Int -> Either String [String]
-build2 = undefined
+build2 c n 
+	| n==0 = Left "n=0"
+	| n>100 = Left "n>100"
+	| c=='x' = Left "Роспотребнадзор запрещает создавать строки из символа 'x'"
+	| otherwise = Right (foldr (\x list ->(take x (repeat c)):list) [] [1..n])
+
+
 
 {-
   Параметрами командной строки являются имя файла, символ, целое число.
@@ -39,5 +47,22 @@ build2 = undefined
      Maybe и Either String как функторов).
 -}
 
+instance Functor (Either a) where
+	fmap f (Right x) = Right (f x)
+	fmap f (Left x) = Left x
+
+-- В аргументах первым задается файл для считывания, затем символ и число n.
 main = do
-  undefined
+	tLen <- fmap totalLength getArgs
+	putStrLn "Общая длина строк, переданных программе:"
+	print tLen
+	fname <- fmap head getArgs
+	content <- fmap lines (readFile fname)
+	putStrLn $ "Общая длина строк в файле "++fname++":"
+	print $ totalLength content ;
+	c <- fmap (\x -> head (head (tail x))) getArgs
+	n <- fmap (\x -> read (head (drop 2 x))) getArgs
+	putStrLn $ "Общая длина строк в контекстах :"
+	print $ fmap totalLength (build1 c n)
+	print $ fmap totalLength (build2 c n)
+	
