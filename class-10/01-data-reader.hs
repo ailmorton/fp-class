@@ -8,5 +8,33 @@
    (операции >>= и >>, функции ap, liftM и другие функции монадической обработки данных, использование
    блока do не допускается).
 -}
+import System.Environment
+import Control.Monad
+import Data.List
 
-main = undefined
+data Student = Student String Int Int deriving (Show)
+
+triples [] = []
+triples [_] = []
+triples [_,_] = []
+triples l = (take 3 l):triples (drop 3 l)  
+
+loadData fname = liftM (map (\[name,age,gr] -> Student name (read age) (read gr))) (liftM triples (liftM words (readFile fname)))
+
+uniteStudents list1 list2 = sortBy (\(Student n1 b c) (Student n2 d e) -> compare n1 n2) (list1++list2)
+
+toStrings l = concat $ foldr (\(Student name age gr) z -> name:" ":(show age):" ":(show gr):"\n":z) [] l
+
+writeData fname l = writeFile fname (toStrings l)
+
+myAction [fname1,fname2] = uniteStudents `liftM` (loadData fname1) `ap` (loadData fname2) 
+
+main = writeData `liftM` "result.txt" `ap` (fmap myAction getArgs) 
+	
+	--[fname] <- getArgs
+	--st <- loadData fname
+	--print $ head st
+
+
+
+
