@@ -26,7 +26,7 @@ type Pole = (Birds, Birds)
 balance = 3
 
 updatePole :: Pole ->  Either String Pole
-updatePole (ll,rr) = if unbalanced (ll,rr) then (if (ll>rr) then Left "Pole unbalanced, fell to letf" else Left "Pole unbalanced, fell to right") else Right (ll,rr)
+updatePole (ll,rr) = if unbalanced (ll,rr) then (if (ll>rr) then Left "Pole unbalanced, fell to left" else Left "Pole unbalanced, fell to right") else Right (ll,rr)
   where
     unbalanced (l, r) = abs (l - r) > balance
 
