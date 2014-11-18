@@ -25,23 +25,37 @@ type Pole = (Birds, Birds)
 
 balance = 3
 
-updatePole :: Pole -> Maybe Pole
-updatePole p = if unbalanced p then Nothing else Just p
+updatePole :: Pole ->  Either String Pole
+updatePole (ll,rr) = if unbalanced (ll,rr) then (if (ll>rr) then Left "Pole unbalanced, fell to letf" else Left "Pole unbalanced, fell to right") else Right (ll,rr)
   where
     unbalanced (l, r) = abs (l - r) > balance
 
-landLeft :: Birds -> Pole -> Maybe Pole
+landLeft :: Birds -> Pole -> Either String Pole
 landLeft n (left, right) = updatePole (left + n, right)
 
-landRight :: Birds -> Pole -> Maybe Pole
+landRight :: Birds -> Pole -> Either String Pole
 landRight n (left, right) = updatePole (left, right + n)
 
-banana :: Pole -> Maybe Pole
-banana = const Nothing
+
+banana :: Pole -> Either String Pole
+banana = const (Left "Fell because of the banana")
+
+loadAndApply fname pole =ap ( liftM (foldr (<=<) return)  (liftM (map makeFunc) (liftM lines (readFile fname))) ) pole
+
+makeFunc (h:s)
+	| h=='R'= landRight (read s)
+	| h=='L'= landLeft (read s)
+	| otherwise = banana
+
+landBoth :: Birds -> Birds -> (Birds, Birds) -> Either String Pole
+landBoth nl nr (left,right) = updatePole (left+nl,right+nr)
+
+unlandAll (left,right) = updatePole (0,0)
 
 tests = all test [1..3]
   where
     test 1 = (return (0, 0) >>= landLeft 1 >>= landRight 4 
-              >>= landLeft (-1) >>= landRight (-2)) == Nothing
-    test 2 = (return (0, 0) >>= landRight 2 >>= landLeft 2 >>= landRight 2) == Just (2, 4)
-    test 3 = (return (0, 0) >>= landLeft 1 >>= banana >>= landRight 1) == Nothing
+              >>= landLeft (-1) >>= landRight (-2)) == Left "Pole unbalanced, fell to right"
+    test 2 = (return (0, 0) >>= landRight 2 >>= landLeft 2 >>= landRight 2) == Right (2, 4)
+    test 3 = (return (0, 0) >>= landLeft 1 >>= banana >>= landRight 1) == Left "Fell because of the banana"
+

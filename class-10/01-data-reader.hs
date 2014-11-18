@@ -29,12 +29,7 @@ writeData fname l = writeFile fname (toStrings l)
 
 myAction [fname1,fname2] = uniteStudents `liftM` (loadData fname1) `ap` (loadData fname2) 
 
-main = writeData `liftM` "result.txt" `ap` (fmap myAction getArgs) 
-	
-	--[fname] <- getArgs
-	--st <- loadData fname
-	--print $ head st
-
+main = getArgs >>= myAction >>= (writeData  "result.txt")
 
 
 
