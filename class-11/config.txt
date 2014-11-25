@@ -1,0 +1,3 @@
+summand = 15
+multiplier = 5
+divisor = 4
