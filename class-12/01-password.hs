@@ -11,25 +11,38 @@
 import Control.Monad
 import Control.Monad.Trans
 import Control.Monad.Trans.Maybe
-
+import Control.Monad.Reader
+import Control.Monad.Writer
 import Data.Char
+import System.Environment
 
-isValid :: String -> Bool
-isValid s = length s >= 8 && 
-                any isAlpha s && 
-                any isNumber s && 
-                any isPunctuation s
+isValid :: String -> (Int,Bool,Bool,Bool) -> Bool
+isValid s (n,c1,c2,c3) = length s >= n && 
+                (any isAlpha s || not c1) && 
+                (any isNumber s || not c2) && 
+                (any isPunctuation s || not c3)
 
-getValidPassword :: MaybeT IO String
+
+getValidPassword :: MaybeT (WriterT [String] (ReaderT (Int,Bool,Bool,Bool) IO)) String
 getValidPassword = do
-  lift $ putStrLn "Введите новый пароль:"
-  s <- lift getLine
-  guard (isValid s)
+  lift $ lift $ lift $ putStrLn "Введите новый пароль:"
+  s <- lift $ lift $ lift $ getLine ;
+	tell [s] ;
+	cond <- ask
+  guard (isValid s cond)
   return s
  
-askPassword :: MaybeT IO ()
+
+askPassword :: MaybeT (WriterT [String] (ReaderT (Int,Bool,Bool,Bool) IO)) ()
 askPassword = do
   value <- msum $ repeat getValidPassword
-  lift $ putStrLn "Сохранение в базе данных..."
+  lift $ lift $ lift $ putStrLn "Сохранение в базе данных..."
 
-main = runMaybeT askPassword
+
+
+main = liftM f getArgs >>= runReaderT (runWriterT (runMaybeT askPassword))
+
+f ::  [String] -> (Int, Bool, Bool, Bool)
+f [n,c1,c2,c3] = (read n, if (c1=="true") then True else False, if (c2=="true") then True else False,if (c3=="true") then True else False)
+
+
