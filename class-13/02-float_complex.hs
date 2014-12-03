@@ -4,7 +4,11 @@ import ParseNumbers
 
 {- Напишите парсер для вещественных чисел. -}
 float :: Parser Float
-float = undefined
+float = Parser f
+	where
+	f [] = []
+	f s = [( head (words s), cs)]
+
 
 {-
   Напишите парсер для представления комплексных чисел,
